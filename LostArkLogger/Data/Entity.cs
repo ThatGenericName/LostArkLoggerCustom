@@ -33,6 +33,18 @@ namespace LostArkLogger
             Projectile,
             Summon,
         }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is Entity e)
+            {
+                return EntityId == e.EntityId;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
     public static class EntityExtensions
     {

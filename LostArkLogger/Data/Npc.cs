@@ -20,7 +20,8 @@ namespace LostArkLogger
             }
             return npcName;
         }
-        public static String GetPcClass(UInt32 id)
+
+        public static string GetPcClass(UInt32 id)
         {
             if (id == 101) return "Warrior";
             if (id == 201) return "Mage";

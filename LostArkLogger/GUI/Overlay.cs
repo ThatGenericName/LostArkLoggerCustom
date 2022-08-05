@@ -59,14 +59,14 @@ namespace LostArkLogger
             sniffer = s;
             sniffer.onCombatEvent += AddDamageEvent;
             sniffer.statusEffectTracker.OnChange += StatusEffectsChangedEvent;
-            encounter = sniffer.currentEncounter;
+            Encounter = sniffer.currentEncounter;
         }
-        Encounter encounter;
-        Entity SubEntity;
+        public Encounter Encounter;
+        public Entity SubEntity;
         Font font = new Font("Helvetica", 10);
         void AddDamageEvent(LogInfo log)
         {
-            if (sniffer.currentEncounter.Infos.Count > 0) encounter = sniffer.currentEncounter;
+            if (sniffer.currentEncounter.Infos.Count > 0) Encounter = sniffer.currentEncounter;
             Invalidate();
         }
 
@@ -76,7 +76,7 @@ namespace LostArkLogger
                 Invalidate();
         }
 
-        internal Parser sniffer;
+        public Parser sniffer;
         List<Brush> brushes = new List<Brush>();
         Brush black = new SolidBrush(Color.White);
         void InitPens()
@@ -106,13 +106,14 @@ namespace LostArkLogger
         }
         public String[] ClassIconIndex = { "start1", "Destroyer", "unk", "Arcana", "Berserker", "Wardancer", "Deadeye", "MartialArtist", "Gunlancer", "Gunner", "Scrapper", "Mage", "Summoner", "Warrior",
          "Soulfist", "Sharpshooter", "Artillerist", "dummyfill", "Bard", "Glavier", "Assassin", "Deathblade", "Shadowhunter", "Paladin", "Scouter", "Reaper", "FemaleGunner", "Gunslinger", "MaleMartialArtist", "Striker", "Sorceress" };
+        
         public Pen arrowPen = new Pen(Color.FromArgb(255, 255, 255, 255), 4) { StartCap = System.Drawing.Drawing2D.LineCap.ArrowAnchor };
         IOrderedEnumerable<KeyValuePair<String, Tuple<UInt64, UInt32, UInt32, UInt64>>> orderedRows;
         private readonly Bitmap ClassSymbols = Properties.Resources.class_symbol_0;
         protected void OnPaintStatusEffectTimes(PaintEventArgs e, float heightBuffer)
         {
-            var rows = scope == Scope.Player ? encounter.GetStatusEffects(SubEntity) : encounter.GetStatusEffects();
-            var elapsed = ((encounter.End == default(DateTime) ? DateTime.Now : encounter.End) - encounter.Start).TotalSeconds;
+            var rows = scope == Scope.Player ? Encounter.GetStatusEffects(SubEntity) : Encounter.GetStatusEffects();
+            var elapsed = ((Encounter.End == default(DateTime) ? DateTime.Now : Encounter.End) - Encounter.Start).TotalSeconds;
             orderedRows = rows.OrderByDescending(a => a.Value);
             for (var i = 0; i < orderedRows.Count(); i++)
             {
@@ -183,8 +184,8 @@ namespace LostArkLogger
                         OnPaintStatusEffectTimes(e, heightBuffer);
                         return;
                 }
-                var elapsed = ((encounter.End == default(DateTime) ? DateTime.Now : encounter.End) - encounter.Start).TotalSeconds;
-                var rows = encounter.GetDamages((i => (Single)(
+                var elapsed = ((Encounter.End == default(DateTime) ? DateTime.Now : Encounter.End) - Encounter.Start).TotalSeconds;
+                var rows = Encounter.GetDamages((i => (Single)(
                     level == Level.Damage ? i.Damage :
                     level == Level.RaidDamage ? i.Damage :
                     level == Level.Stagger ? i.Stagger :
@@ -193,19 +194,19 @@ namespace LostArkLogger
                     level == Level.RaidTimeAlive ? (i.TimeAlive) :
                     level == Level.Heal ? i.Heal :
                     level == Level.Shield ? i.Shield : 0)), SubEntity);
-                if (level == Level.Damage) rows = encounter.GetDamages((i => i.Damage), SubEntity);
-                else if (level == Level.Counterattacks) rows = encounter.Counterattacks.ToDictionary(x => x.Key, x => Tuple.Create(x.Value, 0u, 0u, 0ul));
-                else if (level == Level.Stagger) rows = encounter.Stagger.ToDictionary(x => x.Key, x => Tuple.Create(x.Value, 0u, 0u, 0ul));
-                else if (level == Level.TimeAlive) rows = encounter.TimeAlive.ToDictionary(x => x.Key, x => Tuple.Create(x.Value, 0u, 0u, 0ul));
+                if (level == Level.Damage) rows = Encounter.GetDamages((i => i.Damage), SubEntity);
+                else if (level == Level.Counterattacks) rows = Encounter.Counterattacks.ToDictionary(x => x.Key, x => Tuple.Create(x.Value, 0u, 0u, 0ul));
+                else if (level == Level.Stagger) rows = Encounter.Stagger.ToDictionary(x => x.Key, x => Tuple.Create(x.Value, 0u, 0u, 0ul));
+                else if (level == Level.TimeAlive) rows = Encounter.TimeAlive.ToDictionary(x => x.Key, x => Tuple.Create(x.Value, 0u, 0u, 0ul));
                 else if (level == Level.RaidTimeAlive)
                 {
-                    rows = encounter.RaidTimeAlive.ToDictionary(x => x.Key, x => Tuple.Create(x.Value, 0u, 0u, 0ul));
-                    elapsed = encounter.RaidTime;
+                    rows = Encounter.RaidTimeAlive.ToDictionary(x => x.Key, x => Tuple.Create(x.Value, 0u, 0u, 0ul));
+                    elapsed = Encounter.RaidTime;
                 }
                 else if (level == Level.RaidDamage)
                 {
-                    rows = encounter.GetRaidDamages((i => i.Damage), SubEntity);
-                    elapsed = encounter.RaidTime;
+                    rows = Encounter.GetRaidDamages((i => i.Damage), SubEntity);
+                    elapsed = Encounter.RaidTime;
                 }
 
                 var maxDamage = rows.Count == 0 ? 0 : rows.Max(b => b.Value.Item1);
@@ -282,12 +283,12 @@ namespace LostArkLogger
                         {
                             case Level.StatusEffectTimes:
                                 entityName = orderedRows.ElementAt(index).Key;
-                                SubEntity = encounter.Infos.First(i => i.DestinationEntity.VisibleName == entityName).DestinationEntity;
+                                SubEntity = Encounter.Infos.First(i => i.DestinationEntity.VisibleName == entityName).DestinationEntity;
                                 SwitchOverlay(Scope.Player);
                                 break;
                             default:
                                 entityName = orderedRows.ElementAt(index).Key;
-                                SubEntity = encounter.Infos.First(i => i.SourceEntity.VisibleName == entityName).SourceEntity;
+                                SubEntity = Encounter.Infos.First(i => i.SourceEntity.VisibleName == entityName).SourceEntity;
                                 SwitchOverlay(Scope.Player);
                                 break;
                         }
@@ -295,7 +296,7 @@ namespace LostArkLogger
                     }
                     if (scope == Scope.Encounters)
                     {
-                        encounter = sniffer.Encounters.ElementAt(sniffer.Encounters.Count - index - 1);
+                        Encounter = sniffer.Encounters.ElementAt(sniffer.Encounters.Count - index - 1);
                         SwitchOverlay(Scope.TopLevel);
                     }
                 }

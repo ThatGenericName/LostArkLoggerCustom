@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace LostArkLogger
 {
-    internal class Parser : IDisposable
+    public class Parser : IDisposable
     {
 #pragma warning disable CA2101 // Specify marshaling for P/Invoke string arguments
         [DllImport("wpcap.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)] static extern IntPtr pcap_strerror(int err);
@@ -22,6 +22,7 @@ namespace LostArkLogger
         public event Action onNewZone;
         public event Action beforeNewZone;
         public event Action<int> onPacketTotalCount;
+        public event Action<bool> onRaidReset; // if the raid is reset due to raid wipe or boss killed, pass true for boss was killed.
         public bool use_npcap = false;
         private object lockPacketProcessing = new object(); // needed to synchronize UI swapping devices
         public Machina.Infrastructure.NetworkMonitorType? monitorType = null;
@@ -126,6 +127,13 @@ namespace LostArkLogger
                 return;
             var hitOption = (HitOption)(((dmgEvent.Modifier >> 4) & 0x7) - 1);
             var skillName = Skill.GetSkillName(skillId, skillEffectId);
+            if (Properties.Settings.Default.Region == Region.Steam)
+            {
+                if (LostArkLogger.LarkCustom.Utility.BattleItems.Contains((int)skillEffectId))
+                {
+                    skillName = LostArkLogger.LarkCustom.Utility.BattleItems.GetItemNameFromID((int)skillEffectId);
+                }
+            }
             var targetEntity = currentEncounter.Entities.GetOrAdd(dmgEvent.TargetId);
             var destinationName = targetEntity != null ? targetEntity.VisibleName : dmgEvent.TargetId.ToString("X");
             //var log = new LogInfo { Time = DateTime.Now, Source = sourceName, PC = sourceName.Contains("("), Destination = destinationName, SkillName = skillName, Crit = (dmgEvent.FlagsMaybe & 0x81) > 0, BackAttack = (dmgEvent.FlagsMaybe & 0x10) > 0, FrontAttack = (dmgEvent.FlagsMaybe & 0x20) > 0 };
@@ -345,7 +353,6 @@ namespace LostArkLogger
                                     i.Value.dead = false;
                                 }
                             }
-                            
                         }
                         
                         //Task.Delay(100); // wait 4000ms to capture any final damage/status Effect packets
