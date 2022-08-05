@@ -19,19 +19,27 @@ namespace LostArkLogger
             Bluegrams.Application.PortableSettingsProvider.SettingsFileName = AppDomain.CurrentDomain.FriendlyName + ".ini";
             Bluegrams.Application.PortableSettingsProvider.ApplyProvider(Properties.Settings.Default);
             if (!AdminRelauncher()) return;
+            VersionCompatibility();
             if (!IsConsole) Warning();
             AttemptFirewallPrompt();
-
             if (!IsConsole)
             {
-				ApplicationConfiguration.Initialize();
-				Application.Run(new MainWindow());
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new MainWindow());
             }
             else
             {
                 var httpBridge = new HttpBridge();
                 httpBridge.args = args;
                 httpBridge.Start();
+            }
+            if (File.Exists(Utilities.Logger.fileName) && Properties.Settings.Default.AutoUpload)
+            {
+                var fileBytes = File.ReadAllBytes(Utilities.Logger.fileName);
+                var fileText = File.ReadAllText(Utilities.Logger.fileName);
+                if (fileBytes.Length > 100 && fileText.Contains("8|"))
+                    Utilities.Uploader.UploadLog(fileBytes);
             }
         }
         static void AttemptFirewallPrompt()
@@ -41,6 +49,22 @@ namespace LostArkLogger
             var t = new TcpListener(ipLocalEndPoint);
             t.Start();
             t.Stop();
+        }
+        static void VersionCompatibility()
+        {
+            (var region, var installedVersion) = VersionCheck.GetLostArkVersion();
+            if (installedVersion == null)
+            {
+                MessageBox.Show("Launch Lost Ark before launching logger", "Lost Ark Not Running", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Environment.Exit(0);
+            }
+            else if (region == Region.Unknown)
+                MessageBox.Show("DPS Meter is out of date.\nDPS Meter might not work until updated.\nCheck Discord/Github for more info.\nFeel free to add a message in the discord informing shalzuth that it's out of data", "Out of date!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else if (Properties.Settings.Default.Region != region)
+            {
+                Properties.Settings.Default.Region = region;
+                Properties.Settings.Default.Save();
+            }
         }
         static void Warning()
         {

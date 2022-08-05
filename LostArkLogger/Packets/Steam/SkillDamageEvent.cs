@@ -10,12 +10,12 @@ namespace LostArkLogger
             b_0 = reader.ReadByte();
             if (b_0 == 1)
                 b_1 = reader.ReadByte();
-            Damage = reader.ReadPackedInt();
-            TargetId = reader.ReadUInt64();
+            u16_0 = reader.ReadUInt16();
             MaxHp = reader.ReadPackedInt();
             CurHp = reader.ReadPackedInt();
-            u16 = reader.ReadUInt16();
+            TargetId = reader.ReadUInt64();
             b_2 = reader.ReadByte();
+            Damage = reader.ReadPackedInt();
         }
     }
 }
