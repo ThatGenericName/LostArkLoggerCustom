@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LostArkLogger
 {
-    internal class StatusEffectTracker
+    public class StatusEffectTracker
     {
         private readonly ConcurrentDictionary<UInt64, ConcurrentDictionary<UInt64, StatusEffect>> StatusEffectRegistry;
         public Parser parser;

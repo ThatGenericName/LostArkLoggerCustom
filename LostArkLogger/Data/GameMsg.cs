@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using System.Text.Json;
+using System.IO;
+
 namespace LostArkLogger
 {
     public class GameMsg

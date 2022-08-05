@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace LostArkLogger
 {
-    internal class Parser : IDisposable
+    public class Parser : IDisposable
     {
 #pragma warning disable CA2101 // Specify marshaling for P/Invoke string arguments
         [DllImport("wpcap.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)] static extern IntPtr pcap_strerror(int err);
@@ -22,6 +22,7 @@ namespace LostArkLogger
         public event Action onNewZone;
         public event Action beforeNewZone;
         public event Action<int> onPacketTotalCount;
+        public event Action<bool> onRaidReset; // if the raid is reset due to raid wipe or boss killed, pass true for boss was killed.
         public bool use_npcap = false;
         private object lockPacketProcessing = new object(); // needed to synchronize UI swapping devices
         public Machina.Infrastructure.NetworkMonitorType? monitorType = null;
@@ -36,7 +37,6 @@ namespace LostArkLogger
 
         public Parser()
         {
-
             Encounters.Add(currentEncounter);
             onCombatEvent += Parser_onDamageEvent;
             onNewZone += Parser_onNewZone;
@@ -121,6 +121,13 @@ namespace LostArkLogger
         void ProcessDamageEvent(Entity sourceEntity, UInt32 skillId, UInt32 skillEffectId, SkillDamageEvent dmgEvent)
         {
             var skillName = Skill.GetSkillName(skillId, skillEffectId);
+            if (Properties.Settings.Default.Region == Region.Steam)
+            {
+                if (LostArkLogger.LarkCustom.Utility.BattleItems.Contains((int)skillEffectId))
+                {
+                    skillName = LostArkLogger.LarkCustom.Utility.BattleItems.GetItemNameFromID((int)skillEffectId);
+                }
+            }
             var targetEntity = currentEncounter.Entities.GetOrAdd(dmgEvent.TargetId);
             var destinationName = targetEntity != null ? targetEntity.VisibleName : dmgEvent.TargetId.ToString("X");
             //var log = new LogInfo { Time = DateTime.Now, Source = sourceName, PC = sourceName.Contains("("), Destination = destinationName, SkillName = skillName, Crit = (dmgEvent.FlagsMaybe & 0x81) > 0, BackAttack = (dmgEvent.FlagsMaybe & 0x10) > 0, FrontAttack = (dmgEvent.FlagsMaybe & 0x20) > 0 };
@@ -316,15 +323,15 @@ namespace LostArkLogger
                     if (WasKill || WasWipe || opcode == OpCodes.PKTRaidBossKillNotify || opcode == OpCodes.PKTRaidResult) // if kill or wipe update the raid time duration 
                     {
                         currentEncounter.RaidTime += Duration;
-                        foreach (var i in currentEncounter.Entities.Where(e=>e.Value.Type == Entity.EntityType.Player))
+                        foreach (var player in currentEncounter.Entities.Where(e=>e.Value.Type == Entity.EntityType.Player))
                         {
-                            if (!(i.Value.dead)) // if Player not dead on end of kill write fake death logInfo to track their time alive
+                            if (!(player.Value.dead)) // if Player not dead on end of kill write fake death logInfo to track their time alive
                             {
                                 var log = new LogInfo
                                 {
                                     Time = DateTime.Now,
-                                    SourceEntity = i.Value,
-                                    DestinationEntity = i.Value,
+                                    SourceEntity = player.Value,
+                                    DestinationEntity = player.Value,
                                     SkillName = "Death",
                                     TimeAlive = Duration,
                                     Death = true
@@ -335,7 +342,7 @@ namespace LostArkLogger
                             }
                             else // reset death flag on every wipe or kill
                             {
-                                i.Value.dead = false;
+                                player.Value.dead = false;
                             }
                         }
                     }
@@ -355,9 +362,11 @@ namespace LostArkLogger
                         currentEncounter.RaidTime = Encounters.Last().RaidTime + Duration;// update raid duration
                         WasWipe = false;
 
+                        onRaidReset(false);
                     }
                     else if (WasKill)
                     {
+                        onRaidReset(true);
                         WasKill = false;
                     }
 

@@ -63,10 +63,30 @@ namespace LostArkLogger.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap BattleItems {
+            get {
+                object obj = ResourceManager.GetObject("BattleItems", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap class_symbol_0 {
             get {
                 object obj = ResourceManager.GetObject("class_symbol_0", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] ClassColors {
+            get {
+                object obj = ResourceManager.GetObject("ClassColors", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
@@ -96,6 +116,16 @@ namespace LostArkLogger.Properties {
         public static byte[] Npc {
             get {
                 object obj = ResourceManager.GetObject("Npc", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] npcNames {
+            get {
+                object obj = ResourceManager.GetObject("npcNames", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -147,6 +177,15 @@ namespace LostArkLogger.Properties {
             get {
                 object obj = ResourceManager.GetObject("SkillEffect", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UserConfig.Json.
+        /// </summary>
+        public static string UserSettingsPath {
+            get {
+                return ResourceManager.GetString("UserSettingsPath", resourceCulture);
             }
         }
         
