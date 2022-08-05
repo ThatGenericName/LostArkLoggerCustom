@@ -5,7 +5,9 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.IO;
 
+using LostArkLogger.LarkCustom;
 using LostArkLogger.LarkCustom.Units;
 using LostArkLogger.LarkCustom.UI;
 
@@ -22,6 +24,7 @@ namespace LostArkLogger.LarkCustom.Config
         public CombatHistoryContent.CombatHistoryMode CombatHistoryMode { get; set; } = CombatHistoryContent.CombatHistoryMode.All;
         public RaidInfo.RaidInfoEnum CurrentRaid { get; set; } = RaidInfo.RaidInfoEnum.Default;
         public int DPSPeriod { get; set; } = 40;
+        public Entity[] PartyMembers { get; } = { LarkCustomControl.User, null, null, null };
 
         public RaidInfo.DifficultyModifier CurrentDifficulty { get; set; } = RaidInfo.DifficultyModifier.Normal;
 

@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
+using System.Drawing;
+
 using LostArkLogger.LarkCustom.Units;
 using LostArkLogger.LarkCustom.Utility;
 

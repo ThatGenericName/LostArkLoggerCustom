@@ -52,8 +52,10 @@ namespace LostArkLogger.LarkCustom.Units
             _graphicsBuffer.Graphics.DrawImage(graphBitmap, 0, 0, this.Width, this.Height);
             _graphicsBuffer.Render();
         }
-        public void ShowWindow(Action<Graphics, int, int> csd)
+        public void ShowWindow(Action<Graphics, int, int> csd, int x, int y, int width, int height)
         {
+            this.Width = width;
+            this.Height = height;
             configSettingDraw = csd ?? throw new InvalidOperationException("ConfigWindow.ShowWindow() called without being assigned a config");
             gfxRenderTimer.Start();
             this.WindowState = FormWindowState.Normal;

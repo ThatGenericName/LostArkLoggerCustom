@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
+using System.Windows.Forms;
 
 using LostArkLogger.LarkCustom;
 using LostArkLogger.LarkCustom.UI;
@@ -67,12 +69,12 @@ namespace LostArkLogger.LarkCustom.Units
 
                 if (UserOnTop)
                 {
-                    damageList.Add(new KeyValuePair<Entity, DamageDataStruct[]>(Control.User, PeriodDamage[Control.User]));
-                    PeriodDamage.Remove(Control.User);
+                    damageList.Add(new KeyValuePair<Entity, DamageDataStruct[]>(LarkCustomControl.User, PeriodDamage[LarkCustomControl.User]));
+                    PeriodDamage.Remove(LarkCustomControl.User);
                 }
                 if (SplitParties)
                 {
-                    var p1DmgFilter = PeriodDamage.Where(x => Control.PartyMembers.Contains(x.Key));
+                    var p1DmgFilter = PeriodDamage.Where(x => Config.UserConfig.CurrentUserConfig.PartyMembers.Contains(x.Key));
                     List<KeyValuePair<Entity, DamageDataStruct[]>> p1DmgList = new List<KeyValuePair<Entity, DamageDataStruct[]>>(p1DmgFilter);
                     p1DmgList.Sort((a, b) => a.Value[0].Damage > b.Value[0].Damage ? 1 : -1);
                     foreach (KeyValuePair<Entity, DamageDataStruct[]> item in p1DmgList)
@@ -108,7 +110,7 @@ namespace LostArkLogger.LarkCustom.Units
             // DPS Period
             Font topbarInfo = fonts[FontInd.TopBarInfo];
 
-            string dpsPeriodStr = $"DPS Period: {UserConfig.CurrentUserConfig.DPSPeriod}s";
+            string dpsPeriodStr = $"DPS Period: {Config.UserConfig.CurrentUserConfig.DPSPeriod}s";
             g.DrawString(timeStr, topbarInfo, whiteBrush, StartX + 400, StartY + 40, leftAlign);
 
             // Right Info Stuff (DPS and Total Damage);
@@ -133,7 +135,7 @@ namespace LostArkLogger.LarkCustom.Units
             int barWidth = (int)(damagePercentTotal * 900);
             PlayerClassEnum pce = PlayerClassMethods.GetPlayerClassEnumFromID((uint)entity.EntityId);
             // draw main rectangle
-            g.FillRectangle(UserConfig.CurrentUserConfig.ClassBrushes.GetClassBackgroundColor(pce), 0, topLeftY, 900, 50);
+            g.FillRectangle(Config.UserConfig.CurrentUserConfig.ClassBrushes.GetClassBackgroundColor(pce), 0, topLeftY, 900, 50);
 
             // write text
             // User and Class
@@ -156,7 +158,7 @@ namespace LostArkLogger.LarkCustom.Units
             string dmgPerPeriodStr = NumberStringFormatter.FormatPercent(dmgPerTotal);
             g.DrawString(dmgPerPeriodStr, font, textBrushBlack, topLeftX + 450, textPosYBot, centerAlign);
 
-            string dpsTotal = NumberStringFormatter.FormatLargeInt((ulong)(damageData[0].Damage / (double)UserConfig.CurrentUserConfig.DPSPeriod));
+            string dpsTotal = NumberStringFormatter.FormatLargeInt((ulong)(damageData[0].Damage / (double)Config.UserConfig.CurrentUserConfig.DPSPeriod));
             g.DrawString(dpsTotal, font, textBrushWhite, topLeftX + 550, textPosYTop, centerAlign);
             string dpsPeriod = NumberStringFormatter.FormatLargeInt((ulong)(damageData[1].Damage / elapsedRaidTime.TotalSeconds));
             g.DrawString(dpsPeriod, font, textBrushBlack, topLeftX + 550, textPosYBot, centerAlign);

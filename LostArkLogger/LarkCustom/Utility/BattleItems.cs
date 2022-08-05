@@ -8,7 +8,7 @@ namespace LostArkLogger.LarkCustom.Utility
 {
     public static class BattleItems
     {
-        private static readonly Dictionary<Int32, (string, Int32)> Items = new();
+        private static readonly Dictionary<Int32, (string, Int32)> Items = new Dictionary<int, (string, int)>();
 
         public static string GetItemNameFromID(int id)
         {

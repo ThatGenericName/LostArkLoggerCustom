@@ -42,9 +42,14 @@ namespace LostArkLogger
             displayName.CheckedChanged += new EventHandler(displayName_CheckedChanged);
             autoUpload.CheckedChanged += new EventHandler(autoUpload_CheckedChanged);
             //sniffModeCheckbox.Checked = Properties.Settings.Default.Npcap;
-            overlay = new Overlay();
-            overlay.AddSniffer(sniffer);
-            overlay.Show();
+
+            // Old Overlay Stuff
+
+            //overlay = new Overlay();
+            //overlay.AddSniffer(sniffer);
+            //overlay.Show();
+
+            LostArkLogger.LarkCustom.LarkCustomControl.Run();
         }
 
         private void weblink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Windows.Forms;
 using LostArkLogger.LarkCustom.UI;
 
 namespace LostArkLogger.LarkCustom
 {
-    public static class Control
+    public static class LarkCustomControl
     {
         public static Parser Parser { get; set; }
 
         public static Entity User { get; set; }
-
-        public static Entity[] PartyMembers { get; } = { User, null, null, null};
 
         public static LarkCustomWindow Window { get; private set; }
 
@@ -29,6 +28,7 @@ namespace LostArkLogger.LarkCustom
 
         public static void Run()
         {
+            Init();
             Window = new LarkCustomWindow();
             Window.DrawAction += Draw;
             Application.Run(Window);

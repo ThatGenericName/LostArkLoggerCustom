@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
+using System.Windows.Forms;
 
 using LostArkLogger;
 
@@ -65,7 +67,7 @@ namespace LostArkLogger.LarkCustom.Units
 
         public Dictionary<Entity, DamageDataStruct[]> GetRaidPeriodDamage()
         {
-            return currentEncounter.GetRaidDamageInPeriod(UserConfig.CurrentUserConfig.DPSPeriod);
+            return currentEncounter.GetRaidDamageInPeriod(Config.UserConfig.CurrentUserConfig.DPSPeriod);
         }
 
         public Dictionary<Entity, DamageDataStruct> GetRaidDamage()
@@ -75,7 +77,7 @@ namespace LostArkLogger.LarkCustom.Units
 
         public Dictionary<uint, DamageDataStruct> GetEntityDamageData(Entity entity)
         {
-            return currentEncounter.GetEntityDamageInPeriod(UserConfig.CurrentUserConfig.DPSPeriod, entity);
+            return currentEncounter.GetEntityDamageInPeriod(Config.UserConfig.CurrentUserConfig.DPSPeriod, entity);
         }
 
         public TimeSpan GetEncounterTime()
