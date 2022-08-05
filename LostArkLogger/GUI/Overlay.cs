@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace LostArkLogger
 {
-    public partial class Overlay : Form
+    public class Overlay : Form
     {
         enum Level // need better state, suboverlay type/etc.
         {
@@ -37,7 +37,21 @@ namespace LostArkLogger
         {
             InitPens();
             Control.CheckForIllegalCrossThreadCalls = false;
-            InitializeComponent();
+            this.SuspendLayout();
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(300, 120);
+            this.DoubleBuffered = true;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.MinimizeBox = false;
+            this.Name = "Overlay";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
+            this.Text = "Overlay";
+            this.TopMost = true;
+            this.TransparencyKey = System.Drawing.SystemColors.Control;
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Overlay_MouseDown);
+            this.ResumeLayout(false);
             SetStyle(ControlStyles.ResizeRedraw, true);
         }
         internal void AddSniffer(Parser s)
@@ -94,7 +108,7 @@ namespace LostArkLogger
          "Soulfist", "Sharpshooter", "Artillerist", "dummyfill", "Bard", "Glavier", "Assassin", "Deathblade", "Shadowhunter", "Paladin", "Scouter", "Reaper", "FemaleGunner", "Gunslinger", "MaleMartialArtist", "Striker", "Sorceress" };
         public Pen arrowPen = new Pen(Color.FromArgb(255, 255, 255, 255), 4) { StartCap = System.Drawing.Drawing2D.LineCap.ArrowAnchor };
         IOrderedEnumerable<KeyValuePair<String, Tuple<UInt64, UInt32, UInt32, UInt64>>> orderedRows;
-
+        private readonly Bitmap ClassSymbols = Properties.Resources.class_symbol_0;
         protected void OnPaintStatusEffectTimes(PaintEventArgs e, float heightBuffer)
         {
             var rows = scope == Scope.Player ? encounter.GetStatusEffects(SubEntity) : encounter.GetStatusEffects();
@@ -109,9 +123,11 @@ namespace LostArkLogger
                 e.Graphics.FillRectangle(brushes[i % brushes.Count], 0, (i + 1) * barHeight, barWidth, barHeight);
                 if (rowData.Key.Contains('(') && scope == Scope.TopLevel)
                 {
-                    var className = rowData.Key[(rowData.Key.IndexOf("(") + 1)..];
+                    var className = rowData.Key.Substring(rowData.Key.IndexOf("(") + 1);
                     className = className.Substring(0, className.IndexOf(")")).Split(' ')[1];
-                    e.Graphics.DrawImage(Properties.Resources.class_symbol_0, new Rectangle(2, (i + 1) * barHeight + 2, barHeight - 4, barHeight - 4), GetSpriteLocation(Array.IndexOf(ClassIconIndex, className)), GraphicsUnit.Pixel);
+                    //var className = rowData.Key[(rowData.Key.IndexOf("(") + 1)..];
+                    //className = className.Substring(0, className.IndexOf(")")).Split(' ')[1];
+                    e.Graphics.DrawImage(ClassSymbols, new Rectangle(2, (i + 1) * barHeight + 2, barHeight - 4, barHeight - 4), GetSpriteLocation(Array.IndexOf(ClassIconIndex, className)), GraphicsUnit.Pixel);
                     nameOffset += 2 + barHeight - 4;
                 }
                 var edge = e.Graphics.MeasureString(infoString, font);
@@ -224,10 +240,10 @@ namespace LostArkLogger
                     {
                         var className = rowText.Substring(rowText.IndexOf("(") + 1);
                         className = className.Substring(0, className.IndexOf(")")).Split(' ')[1];
-                        e.Graphics.DrawImage(Properties.Resources.class_symbol_0, new Rectangle(2, (i + 1) * barHeight + 2, barHeight - 4, barHeight - 4), GetSpriteLocation(Array.IndexOf(ClassIconIndex, className)), GraphicsUnit.Pixel);
+                        e.Graphics.DrawImage(ClassSymbols, new Rectangle(2, (i + 1) * barHeight + 2, barHeight - 4, barHeight - 4), GetSpriteLocation(Array.IndexOf(ClassIconIndex, className)), GraphicsUnit.Pixel);
                         nameOffset += 16;
                     }
-                    if (scope == Scope.Player)
+                    if (rowText.Contains("(") && scope == Scope.Player)
                     {
                         /*if (Skill.GetSkillIcon(uint.Parse(rowText), out String iconFile, out int iconIndex))
                         {

@@ -16,9 +16,10 @@ namespace LostArkLogger
         public UInt16 Level;
         public List<StatusEffectData> statusEffectDatas;
         public List<subPKTInitPC29> subPKTInitPC29s;
-        public List<UInt16> u16list;
-        public List<Byte[]> bytearraylist;
-        public List<Byte> blist;
+        public List<UInt16> u16list_0;
+        public List<Byte[]> bytearraylist_0;
+        public List<Byte[]> bytearraylist_1;
+        public List<Byte> blist_0;
         public StatPair statPair;
         public Byte[] bytearray_0;
         public Byte[] bytearray_1;
@@ -66,5 +67,6 @@ namespace LostArkLogger
         public Byte b_17;
         public Byte b_18;
         public Byte b_19;
+        public Byte b_20;
     }
 }

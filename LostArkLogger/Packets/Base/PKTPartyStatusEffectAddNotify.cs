@@ -9,9 +9,10 @@ namespace LostArkLogger
             if (Properties.Settings.Default.Region == Region.Steam) SteamDecode(reader);
             if (Properties.Settings.Default.Region == Region.Korea) KoreaDecode(reader);
         }
-        public List<StatusEffectData> statusEffectDatas;
         public UInt64 PartyId;
         public UInt64 PlayerIdOnRefresh;
-        public Byte b;
+        public List<StatusEffectData> statusEffectDatas;
+        public UInt64 u64_0;
+        public Byte b_0;
     }
 }
